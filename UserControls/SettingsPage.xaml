@@ -1,0 +1,32 @@
+<UserControl x:Class="UClipClip.SettingsPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="White">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="10">
+        <StackPanel>
+            <TextBlock Text="Window Size" FontSize="16" FontWeight="Bold" Margin="0,0,0,10"/>
+
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,15">
+                <TextBlock Text="Width:" Width="60" VerticalAlignment="Center"/>
+                <TextBox x:Name="WidthBox" Width="80" Margin="5,0"/>
+                <TextBlock Text="px" VerticalAlignment="Center" Margin="5,0"/>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,20">
+                <TextBlock Text="Height:" Width="60" VerticalAlignment="Center"/>
+                <TextBox x:Name="HeightBox" Width="80" Margin="5,0"/>
+                <TextBlock Text="px" VerticalAlignment="Center" Margin="5,0"/>
+            </StackPanel>
+
+            <Separator Margin="0,0,0,15"/>
+
+            <CheckBox x:Name="AppearOnCopyCheck" Content="Show window when something is copied" 
+                      Margin="0,0,0,15" Checked="SettingChanged" Unchecked="SettingChanged"/>
+
+            <CheckBox x:Name="RunOnStartupCheck" Content="Run on Windows startup" 
+                      Margin="0,0,0,15" Checked="SettingChanged" Unchecked="SettingChanged"/>
+
+            <Button Content="Apply and Restart" Click="ApplyButton_Click" Width="120" Height="30" Margin="0,10,0,0"/>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>
