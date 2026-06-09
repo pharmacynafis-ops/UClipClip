@@ -1,37 +1,164 @@
-﻿<Window x:Class="UClipClip.MainWindow"
+<Window x:Class="UClipClip.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="UClipClip" Height="450" Width="300"
-        WindowStyle="None" AllowsTransparency="True" Background="Transparent"
+        xmlns:local="clr-namespace:UClipClip"
+        Title="UClipClip" Height="520" Width="320"
+        WindowStyle="None" AllowsTransparency="True"
+        ResizeMode="CanResize"
+        Background="Transparent"
         Topmost="True"
-        Loaded="Window_Loaded">
-    <Border Background="White" CornerRadius="10" BorderBrush="#ccc" BorderThickness="1">
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
+        ShowInTaskbar="True"
+        Icon="Assets/ico.ico">
 
-        <!-- Drag area (title bar) -->
-        <Border Background="Transparent" Height="30" MouseLeftButtonDown="TitleBar_MouseLeftButtonDown"/>
+    <Window.Resources>
+        <!-- Tab button style -->
+        <Style x:Key="TabBtnStyle" TargetType="Button">
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Height" Value="36"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bd" Background="{TemplateBinding Background}"
+                                CornerRadius="8,8,0,0">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
 
-        <!-- Tab Header -->
-        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="10,10,10,0">
-            <RadioButton x:Name="TabText" Content="Text" GroupName="Tabs" IsChecked="True" Checked="Tab_Checked" Margin="0,0,10,0"/>
-            <RadioButton x:Name="TabFiles" Content="Files &amp; Folders" GroupName="Tabs" Checked="Tab_Checked" Margin="0,0,10,0"/>
-            <RadioButton x:Name="TabSettings" Content="Settings" GroupName="Tabs" Checked="Tab_Checked"/>
-        </StackPanel>
+        <!-- FAB style -->
+        <Style x:Key="FabStyle" TargetType="Button">
+            <Setter Property="Width"  Value="44"/>
+            <Setter Property="Height" Value="44"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bd" Background="{TemplateBinding Background}"
+                                CornerRadius="22"
+                                Effect="{TemplateBinding Effect}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Opacity" Value="0.85"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
 
-        <!-- Tab Content -->
-        <Grid Grid.Row="1" Margin="10" Grid.RowSpan="2">
-            <Frame x:Name="ContentFrame" NavigationUIVisibility="Hidden"/>
+    <Border x:Name="RootBorder"
+            Background="{DynamicResource AppBgBrush}"
+            BorderBrush="{DynamicResource WindowBorderBrush}"
+            BorderThickness="1"
+            CornerRadius="12">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>  <!-- title bar -->
+                <RowDefinition Height="Auto"/>  <!-- tabs -->
+                <RowDefinition Height="*"/>     <!-- page content -->
+            </Grid.RowDefinitions>
+
+            <!-- Title Bar -->
+            <Border Grid.Row="0"
+                    Background="{DynamicResource TitleBarBgBrush}"
+                    CornerRadius="12,12,0,0"
+                    Padding="14,8"
+                    MouseLeftButtonDown="TitleBar_MouseDown">
+                <Grid>
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <Viewbox Width="20" Height="20" Margin="0,0,8,0">
+                            <Canvas Width="24" Height="24">
+                                <Path Fill="{DynamicResource AccentBrush}"
+                                      Data="M19,3H14.82C14.4,1.84 13.3,1 12,1C10.7,1 9.6,1.84 9.18,3H5A2,2 0 0,0 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5A2,2 0 0,0 19,3M12,3A1,1 0 0,1 13,4A1,1 0 0,1 12,5A1,1 0 0,1 11,4A1,1 0 0,1 12,3M7,7H17V9H7V7M7,11H17V13H7V11M7,15H14V17H7V15Z"/>
+                            </Canvas>
+                        </Viewbox>
+                        <TextBlock Text="UClipClip"
+                                   FontSize="15" FontWeight="Bold"
+                                   Foreground="{DynamicResource TextPrimaryBrush}"
+                                   VerticalAlignment="Center"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right"
+                                VerticalAlignment="Center">
+                        <Button Content="—" Width="28" Height="22" Margin="0,0,4,0"
+                                Background="Transparent" BorderThickness="0"
+                                Foreground="{DynamicResource TextSecondaryBrush}"
+                                Click="MinimizeBtn_Click" Cursor="Hand"/>
+                        <Button Content="✕" Width="28" Height="22"
+                                Background="Transparent" BorderThickness="0"
+                                Foreground="{DynamicResource DangerBrush}"
+                                Click="CloseBtn_Click" Cursor="Hand"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- Tab Bar -->
+            <Border Grid.Row="1"
+                    Background="{DynamicResource SurfaceBgBrush}"
+                    Padding="8,6,8,0">
+                <StackPanel Orientation="Horizontal">
+                    <Button x:Name="TabText"    Content="📋 Text"   Width="72"
+                            Style="{StaticResource TabBtnStyle}"
+                            Background="{DynamicResource TabActiveBrush}"
+                            Foreground="{DynamicResource TabActiveTextBrush}"
+                            Click="Tab_Click" Tag="Text" Margin="0,0,4,0"/>
+                    <Button x:Name="TabFiles"   Content="📁 Files"  Width="72"
+                            Style="{StaticResource TabBtnStyle}"
+                            Background="{DynamicResource TabInactiveBrush}"
+                            Foreground="{DynamicResource TabInactiveTextBrush}"
+                            Click="Tab_Click" Tag="Files" Margin="0,0,4,0"/>
+                    <Button x:Name="TabImages"  Content="🖼 Images" Width="76"
+                            Style="{StaticResource TabBtnStyle}"
+                            Background="{DynamicResource TabInactiveBrush}"
+                            Foreground="{DynamicResource TabInactiveTextBrush}"
+                            Click="Tab_Click" Tag="Images"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Page Content -->
+            <Border Grid.Row="2"
+                    Background="{DynamicResource AppBgBrush}"
+                    CornerRadius="0,0,12,12"
+                    Padding="10,10,10,56">
+                <Grid>
+                    <local:TextPage   x:Name="PageText"   Visibility="Visible"/>
+                    <local:FilesPage  x:Name="PageFiles"  Visibility="Collapsed"/>
+                    <local:ImagesPage x:Name="PageImages" Visibility="Collapsed"/>
+                    <local:SettingsPage x:Name="PageSettings" Visibility="Collapsed"/>
+                    <local:AboutPage    x:Name="PageAbout"    Visibility="Collapsed"/>
+                    <local:DeveloperInfoPage x:Name="PageDeveloper" Visibility="Collapsed"/>
+                </Grid>
+            </Border>
+
+            <!-- Settings FAB -->
+            <Button x:Name="SettingsFab"
+                    Grid.Row="2"
+                    Style="{StaticResource FabStyle}"
+                    Background="{DynamicResource SettingsBtnBgBrush}"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Bottom"
+                    Margin="0,0,14,10"
+                    Click="SettingsFab_Click"
+                    ToolTip="Settings">
+                <Button.Effect>
+                    <DropShadowEffect Color="Black" BlurRadius="10" Opacity="0.35" ShadowDepth="2"/>
+                </Button.Effect>
+                <Viewbox Width="22" Height="22">
+                    <Canvas Width="24" Height="24">
+                        <Path Fill="White"
+                              Data="M12,15.5A3.5,3.5 0 0,1 8.5,12A3.5,3.5 0 0,1 12,8.5A3.5,3.5 0 0,1 15.5,12A3.5,3.5 0 0,1 12,15.5M19.43,12.97C19.47,12.65 19.5,12.33 19.5,12C19.5,11.67 19.47,11.34 19.43,11L21.54,9.37C21.73,9.22 21.78,8.95 21.66,8.73L19.66,5.27C19.54,5.05 19.27,4.96 19.05,5.05L16.56,6.05C16.04,5.66 15.5,5.32 14.87,5.07L14.5,2.42C14.46,2.18 14.25,2 14,2H10C9.75,2 9.54,2.18 9.5,2.42L9.13,5.07C8.5,5.32 7.96,5.66 7.44,6.05L4.95,5.05C4.73,4.96 4.46,5.05 4.34,5.27L2.34,8.73C2.21,8.95 2.27,9.22 2.46,9.37L4.57,11C4.53,11.34 4.5,11.67 4.5,12C4.5,12.33 4.53,12.65 4.57,12.97L2.46,14.63C2.27,14.78 2.21,15.05 2.34,15.27L4.34,18.73C4.46,18.95 4.73,19.03 4.95,18.95L7.44,17.94C7.96,18.34 8.5,18.68 9.13,18.93L9.5,21.58C9.54,21.82 9.75,22 10,22H14C14.25,22 14.46,21.82 14.5,21.58L14.87,18.93C15.5,18.68 16.04,18.34 16.56,17.94L19.05,18.95C19.27,19.03 19.54,18.95 19.66,18.73L21.66,15.27C21.78,15.05 21.73,14.78 21.54,14.63L19.43,12.97Z"/>
+                    </Canvas>
+                </Viewbox>
+            </Button>
         </Grid>
-
-        <!-- Close button -->
-        <Button Grid.Row="2" Content="✕" Width="30" Height="30" HorizontalAlignment="Right" 
-                Margin="0,0,10,10" Click="CloseButton_Click" Background="Transparent" BorderThickness="0"
-                FontSize="14" Cursor="Hand"/>
-    </Grid>
-</Border>
+    </Border>
 </Window>

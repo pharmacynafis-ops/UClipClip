@@ -1,0 +1,46 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- ── Dark ─────────────────────────────────────────────────────── -->
+    <Color x:Key="AppBg">#0F1117</Color>
+    <Color x:Key="SurfaceBg">#1A1D27</Color>
+    <Color x:Key="CardBg">#1E2130</Color>
+    <Color x:Key="CardBorder">#2D3148</Color>
+    <Color x:Key="TitleBarBg">#13151F</Color>
+    <Color x:Key="Accent">#6C8EFF</Color>
+    <Color x:Key="AccentHover">#8AABFF</Color>
+    <Color x:Key="Danger">#FF5B5B</Color>
+    <Color x:Key="TextPrimary">#E8EAFF</Color>
+    <Color x:Key="TextSecondary">#8892B0</Color>
+    <Color x:Key="TabActive">#6C8EFF</Color>
+    <Color x:Key="TabActiveText">#FFFFFF</Color>
+    <Color x:Key="TabInactive">#1E2130</Color>
+    <Color x:Key="TabInactiveText">#8892B0</Color>
+    <Color x:Key="InputBg">#1E2130</Color>
+    <Color x:Key="InputBorder">#2D3148</Color>
+    <Color x:Key="ScrollBg">#2D3148</Color>
+    <Color x:Key="PinColor">#FBBF24</Color>
+    <Color x:Key="SettingsBtnBg">#6C8EFF</Color>
+    <Color x:Key="WindowBorder">#2D3148</Color>
+
+    <SolidColorBrush x:Key="AppBgBrush"            Color="{StaticResource AppBg}"/>
+    <SolidColorBrush x:Key="SurfaceBgBrush"        Color="{StaticResource SurfaceBg}"/>
+    <SolidColorBrush x:Key="CardBgBrush"           Color="{StaticResource CardBg}"/>
+    <SolidColorBrush x:Key="CardBorderBrush"       Color="{StaticResource CardBorder}"/>
+    <SolidColorBrush x:Key="TitleBarBgBrush"       Color="{StaticResource TitleBarBg}"/>
+    <SolidColorBrush x:Key="AccentBrush"           Color="{StaticResource Accent}"/>
+    <SolidColorBrush x:Key="AccentHoverBrush"      Color="{StaticResource AccentHover}"/>
+    <SolidColorBrush x:Key="DangerBrush"           Color="{StaticResource Danger}"/>
+    <SolidColorBrush x:Key="TextPrimaryBrush"      Color="{StaticResource TextPrimary}"/>
+    <SolidColorBrush x:Key="TextSecondaryBrush"    Color="{StaticResource TextSecondary}"/>
+    <SolidColorBrush x:Key="TabActiveBrush"        Color="{StaticResource TabActive}"/>
+    <SolidColorBrush x:Key="TabActiveTextBrush"    Color="{StaticResource TabActiveText}"/>
+    <SolidColorBrush x:Key="TabInactiveBrush"      Color="{StaticResource TabInactive}"/>
+    <SolidColorBrush x:Key="TabInactiveTextBrush"  Color="{StaticResource TabInactiveText}"/>
+    <SolidColorBrush x:Key="InputBgBrush"          Color="{StaticResource InputBg}"/>
+    <SolidColorBrush x:Key="InputBorderBrush"      Color="{StaticResource InputBorder}"/>
+    <SolidColorBrush x:Key="ScrollBgBrush"         Color="{StaticResource ScrollBg}"/>
+    <SolidColorBrush x:Key="PinColorBrush"         Color="{StaticResource PinColor}"/>
+    <SolidColorBrush x:Key="SettingsBtnBgBrush"    Color="{StaticResource SettingsBtnBg}"/>
+    <SolidColorBrush x:Key="WindowBorderBrush"     Color="{StaticResource WindowBorder}"/>
+</ResourceDictionary>

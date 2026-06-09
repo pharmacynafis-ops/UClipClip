@@ -1,9 +1,22 @@
 <UserControl x:Class="UClipClip.SettingsPage"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             Background="White">
+             Background="{DynamicResource AppBgBrush}">
     <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="10">
         <StackPanel>
+            <TextBlock Text="Appearance" FontSize="16" FontWeight="Bold" Margin="0,0,0,10"/>
+
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,15">
+                <TextBlock Text="Theme:" Width="60" VerticalAlignment="Center"/>
+                <ComboBox x:Name="ThemeCombo" Width="120" SelectionChanged="ThemeCombo_SelectionChanged">
+                    <ComboBoxItem Content="Light" IsSelected="True"/>
+                    <ComboBoxItem Content="Dark"/>
+                    <ComboBoxItem Content="King"/>
+                </ComboBox>
+            </StackPanel>
+
+            <Separator Margin="0,0,0,15"/>
+
             <TextBlock Text="Window Size" FontSize="16" FontWeight="Bold" Margin="0,0,0,10"/>
 
             <StackPanel Orientation="Horizontal" Margin="0,0,0,15">
@@ -20,13 +33,29 @@
 
             <Separator Margin="0,0,0,15"/>
 
+            <TextBlock Text="History Limits" FontSize="16" FontWeight="Bold" Margin="0,0,0,10"/>
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,15">
+                <TextBlock Text="Max texts:" Width="80" VerticalAlignment="Center"/>
+                <TextBox x:Name="MaxTextItemsBox" Width="60" Margin="5,0"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,15">
+                <TextBlock Text="Max files/images:" Width="80" VerticalAlignment="Center"/>
+                <TextBox x:Name="MaxFileItemsBox" Width="60" Margin="5,0"/>
+            </StackPanel>
+
+            <Separator Margin="0,0,0,15"/>
+
             <CheckBox x:Name="AppearOnCopyCheck" Content="Show window when something is copied" 
-                      Margin="0,0,0,15" Checked="SettingChanged" Unchecked="SettingChanged"/>
+                      Margin="0,0,0,15"/>
+            <CheckBox x:Name="RunOnStartupCheck" Content="Run on Windows startup" Margin="0,0,0,15"/>
+            <CheckBox x:Name="SoundOnCopyCheck" Content="Play sound on copy" Margin="0,0,0,15"/>
+            <CheckBox x:Name="ShowTimestampCheck" Content="Show timestamp in history" Margin="0,0,0,20"/>
 
-            <CheckBox x:Name="RunOnStartupCheck" Content="Run on Windows startup" 
-                      Margin="0,0,0,15" Checked="SettingChanged" Unchecked="SettingChanged"/>
+            <Button Content="About UClipClip" Click="AboutButton_Click" Width="140" Height="30" Margin="0,10,0,0"/>
+            <Button Content="👨‍💻 Developer Info" Click="DeveloperButton_Click" Width="140" Height="30" Margin="0,10,0,20"/>
 
-            <Button Content="Apply and Restart" Click="ApplyButton_Click" Width="120" Height="30" Margin="0,10,0,0"/>
+            <Button Content="Apply and Restart" Click="ApplyButton_Click" Width="140" Height="30" Margin="0,10,0,0"
+                    Background="{DynamicResource AccentBrush}" Foreground="White"/>
         </StackPanel>
     </ScrollViewer>
 </UserControl>

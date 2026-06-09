@@ -34,4 +34,6 @@ Unhandled exception. System.Runtime.InteropServices.ExternalException (0x800401D
    at UClipClip.App.Main()
 dotnet watch ❌ [UClipClip (net9.0-windows)] Exited with error code -532462766
 dotnet watch ⏳ Waiting for a file to change before restarting ...
-
+E:\UClipClip\MainWindow.xaml.cs(12,17): error CS0104: 'Button' is an ambiguous reference between 'System.Windows.Controls.Button' and 'System.Windows.Forms.Button' [E:\UClipClip\UClipClip_5njk11db_wpftmp.csproj]
+dotnet watch ❌ E:\UClipClip\MainWindow.xaml(140,28): error CS0234: The type or namespace name 'AboutPage' does not exist in the namespace 'UClipClip' (are you missing an assembly reference?) [E:\UClipClip\UClipClip_5njk11db_wpftmp.csproj]
+dotnet watch ❌ E:\UClipClip\UserControls\TextPage.xaml.cs(70,38): error CS0104: 'Button' is an ambiguous reference between 'System.Windows.Controls.Button' and 'System.Windows.Forms.Button' [E:\UClipClip\UClipClip_5njk11db_wpftmp.csproj]

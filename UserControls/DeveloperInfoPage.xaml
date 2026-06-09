@@ -1,0 +1,19 @@
+<UserControl x:Class="UClipClip.DeveloperInfoPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="{DynamicResource AppBgBrush}">
+    <StackPanel Margin="20" VerticalAlignment="Center">
+        <TextBlock Text="👨‍💻 Developer" FontSize="24" FontWeight="Bold"
+                   Foreground="{DynamicResource AccentBrush}" HorizontalAlignment="Center" Margin="0,0,0,20"/>
+        <TextBlock Text="Mostafa Elgendy" FontSize="18" FontWeight="SemiBold"
+                   Foreground="{DynamicResource TextPrimaryBrush}" HorizontalAlignment="Center" Margin="0,0,0,5"/>
+        <TextBlock Text="📞 01037387262" FontSize="16"
+                   Foreground="{DynamicResource TextSecondaryBrush}" HorizontalAlignment="Center" Margin="0,0,0,30"/>
+
+        <Button Content="← Back" Click="BackButton_Click" Width="100" Height="32"
+                Background="{DynamicResource SurfaceBgBrush}"
+                Foreground="{DynamicResource TextPrimaryBrush}"
+                BorderBrush="{DynamicResource CardBorderBrush}" BorderThickness="1"
+                Cursor="Hand" HorizontalAlignment="Center"/>
+    </StackPanel>
+</UserControl>

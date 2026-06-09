@@ -10,11 +10,11 @@ none
 false
 TRACE;DEBUG;NET;NET9_0;NETCOREAPP;WINDOWS;WINDOWS7_0;NET5_0_OR_GREATER;NET6_0_OR_GREATER;NET7_0_OR_GREATER;NET8_0_OR_GREATER;NET9_0_OR_GREATER;NETCOREAPP3_0_OR_GREATER;NETCOREAPP3_1_OR_GREATER;WINDOWS7_0_OR_GREATER
 E:\UClipClip\App.xaml
-4-2040407162
+10-1010388169
 
-14-453946617
+18556168666
 2101573382740
-MainWindow.xaml;UserControls\FilesPage.xaml;UserControls\SettingsPage.xaml;UserControls\TextPage.xaml;
+MainWindow.xaml;Themes\DarkTheme.xaml;Themes\KingTheme.xaml;Themes\LightTheme.xaml;UserControls\AboutPage.xaml;UserControls\DeveloperInfoPage.xaml;UserControls\FilesPage.xaml;UserControls\ImagesPage.xaml;UserControls\SettingsPage.xaml;UserControls\TextPage.xaml;
 
-False
+True
 
