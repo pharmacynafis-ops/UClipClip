@@ -4,55 +4,91 @@ using System.Windows.Input;
 using System.Windows.Media;
 using Models.UClipClip;
 using WpfButton = System.Windows.Controls.Button;
+using System.Collections.ObjectModel;
 
 namespace UClipClip
 {
-    public partial class TextPage : System.Windows.Controls.UserControl
+    public partial class TextPage : UserControl
     {
-        private List<TextClip> _allClips      = new();
-        private List<TextClip> _filteredClips = new();
-        private TextClip?      _editingClip;
-        private string         _currentFilter = "All";
+        private ObservableCollection<DayGroup<TextClip>> _allGroups = new();
+        private List<DayGroup<TextClip>> _filteredGroups = new();
+        private TextClip? _editingClip;
+        private string _currentFilter = "All";
 
         public TextPage()
         {
             InitializeComponent();
-            Loaded += (_, _) => RefreshList();
+            Loaded += (_, _) => ApplyFilter();
         }
 
         public new void AddText(string text)
         {
-            if (_allClips.Count > 0 && _allClips[0].Content == text) return;
-            _allClips.Insert(0, new TextClip { Content = text });
-            var settings = SettingsManager.Load();
-            while (_allClips.Count > settings.MaxTextItems) _allClips.RemoveAt(_allClips.Count - 1);
+            // Avoid duplicate of the very last copied item
+            if (_allGroups.Count > 0 && _allGroups[0].Items.Count > 0 &&
+                _allGroups[0].Items[0].Content == text)
+                return;
+
+            var newClip = new TextClip { Content = text, CopiedAt = DateTime.Now };
+            InsertIntoGroups(newClip);
+            TrimToLimit(SettingsManager.Load().MaxTextItems);
             ApplyFilter();
+        }
+
+        private void InsertIntoGroups(TextClip clip)
+        {
+            var date = clip.CopiedAt.Date;
+            var group = _allGroups.FirstOrDefault(g => g.Date == date);
+            if (group == null)
+            {
+                group = new DayGroup<TextClip> { Date = date, IsExpanded = true };
+                _allGroups.Add(group);
+                // Keep groups sorted descending by date
+                _allGroups = new ObservableCollection<DayGroup<TextClip>>(
+                    _allGroups.OrderByDescending(g => g.Date));
+            }
+            group.Items.Insert(0, clip); // newest on top
+        }
+
+        private void TrimToLimit(int maxItems)
+        {
+            var allItems = _allGroups.SelectMany(g => g.Items).ToList();
+            if (allItems.Count <= maxItems) return;
+
+            int toRemove = allItems.Count - maxItems;
+            // Remove from the oldest groups first
+            var oldestGroups = _allGroups.OrderBy(g => g.Date).ToList();
+            foreach (var group in oldestGroups)
+            {
+                while (toRemove > 0 && group.Items.Count > 0)
+                {
+                    group.Items.RemoveAt(group.Items.Count - 1); // remove oldest inside group
+                    toRemove--;
+                }
+                if (toRemove == 0) break;
+            }
+            // Remove empty groups
+            for (int i = _allGroups.Count - 1; i >= 0; i--)
+                if (_allGroups[i].Items.Count == 0)
+                    _allGroups.RemoveAt(i);
         }
 
         private void ApplyFilter()
         {
             var now = DateTime.Now;
-            _filteredClips = _currentFilter switch
+            _filteredGroups = _currentFilter switch
             {
-                "Today"     => _allClips.Where(c => c.CopiedAt.Date == now.Date).ToList(),
-                "This Week" => _allClips.Where(c => c.CopiedAt >= now.AddDays(-7)).ToList(),
-                _           => _allClips.ToList()
+                "Today" => _allGroups.Where(g => g.Date == now.Date).ToList(),
+                "This Week" => _allGroups.Where(g => g.Date >= now.AddDays(-7)).ToList(),
+                _ => _allGroups.ToList()
             };
-            RefreshList();
+            GroupedItemsControl.ItemsSource = _filteredGroups;
         }
 
-        private void RefreshList()
+        private void RefreshGroupDisplay()
         {
-            var items = _filteredClips.Select(clip => new
-            {
-                clip.Id,
-                clip.Content,
-                ShortContent = clip.Content.Length > 80 ? clip.Content[..80] + "…" : clip.Content,
-                clip.CopiedAt
-            }).ToList();
-
-            TextItemsControl.ItemsSource = null;
-            TextItemsControl.ItemsSource = items;
+            // Replaces the binding to refresh the UI
+            GroupedItemsControl.ItemsSource = null;
+            GroupedItemsControl.ItemsSource = _filteredGroups;
         }
 
         private void FilterButton_Click(object sender, RoutedEventArgs e)
@@ -69,20 +105,31 @@ namespace UClipClip
             {
                 bool isActive = btn == active;
                 btn.Background = isActive
-                    ? (System.Windows.Media.Brush)FindResource("TabActiveBrush")
-                    : (System.Windows.Media.Brush)FindResource("TabInactiveBrush");
+                    ? (Brush)FindResource("TabActiveBrush")
+                    : (Brush)FindResource("TabInactiveBrush");
                 btn.Foreground = isActive
-                    ? (System.Windows.Media.Brush)FindResource("TabActiveTextBrush")
-                    : (System.Windows.Media.Brush)FindResource("TabInactiveTextBrush");
+                    ? (Brush)FindResource("TabActiveTextBrush")
+                    : (Brush)FindResource("TabInactiveTextBrush");
+            }
+        }
+
+        private void GroupHeader_Click(object sender, MouseButtonEventArgs e)
+        {
+            if (sender is Border border && border.DataContext is DayGroup<TextClip> group)
+            {
+                group.IsExpanded = !group.IsExpanded;
+                var icon = border.FindName("GroupExpandIcon") as TextBlock;
+                if (icon != null) icon.Text = group.IsExpanded ? "▼" : "▶";
+                var content = (border.Parent as Border)?.FindName("GroupContent") as Border;
+                if (content != null) content.Visibility = group.IsExpanded ? Visibility.Visible : Visibility.Collapsed;
             }
         }
 
         private void CardHeader_Click(object sender, MouseButtonEventArgs e)
         {
             if (sender is not Border border) return;
-            var parent   = border.Parent as Grid;
-            var expanded = parent?.Children.OfType<Border>()
-                                  .FirstOrDefault(b => b.Name == "ExpandedContent");
+            var parentGrid = border.Parent as Grid;
+            var expanded = parentGrid?.Children.OfType<Border>().FirstOrDefault(b => b.Name == "ExpandedContent");
             if (expanded == null) return;
 
             bool opening = expanded.Visibility != Visibility.Visible;
@@ -94,13 +141,8 @@ namespace UClipClip
         private void CopyButton_Click(object sender, RoutedEventArgs e)
         {
             if (sender is not WpfButton btn) return;
-            dynamic? item = btn.Tag;
-            if (item == null) return;
-
-            var original = _allClips.FirstOrDefault(c => c.Id == (string)item.Id);
-            if (original == null) return;
-
-            SetClipboardTextSafe(original.Content);
+            if (btn.Tag is TextClip clip)
+                SetClipboardTextSafe(clip.Content);
         }
 
         internal static void SetClipboardTextSafe(string text)
@@ -122,13 +164,10 @@ namespace UClipClip
         private void EditButton_Click(object sender, RoutedEventArgs e)
         {
             if (sender is not WpfButton btn) return;
-            dynamic? item = btn.Tag;
-            if (item == null) return;
-
-            _editingClip = _allClips.FirstOrDefault(c => c.Id == (string)item.Id);
-            if (_editingClip != null)
+            if (btn.Tag is TextClip clip)
             {
-                EditTextBox.Text    = _editingClip.Content;
+                _editingClip = clip;
+                EditTextBox.Text = clip.Content;
                 EditPanel.Visibility = Visibility.Visible;
             }
         }
@@ -138,7 +177,8 @@ namespace UClipClip
             if (_editingClip != null)
             {
                 _editingClip.Content = EditTextBox.Text;
-                ApplyFilter();
+                // Update the ShortContent binding (handled via UI refresh)
+                RefreshGroupDisplay();
             }
             EditPanel.Visibility = Visibility.Collapsed;
             _editingClip = null;
@@ -153,13 +193,16 @@ namespace UClipClip
         private void DeleteButton_Click(object sender, RoutedEventArgs e)
         {
             if (sender is not WpfButton btn) return;
-            dynamic? item = btn.Tag;
-            if (item == null) return;
-
-            var clip = _allClips.FirstOrDefault(c => c.Id == (string)item.Id);
-            if (clip != null)
+            if (btn.Tag is TextClip clip)
             {
-                _allClips.Remove(clip);
+                // Remove from its group
+                var group = _allGroups.FirstOrDefault(g => g.Items.Contains(clip));
+                if (group != null)
+                {
+                    group.Items.Remove(clip);
+                    if (group.Items.Count == 0)
+                        _allGroups.Remove(group);
+                }
                 ApplyFilter();
             }
         }

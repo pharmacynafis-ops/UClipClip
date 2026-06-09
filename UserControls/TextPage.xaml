@@ -11,7 +11,7 @@
 
         <!-- Filter buttons -->
         <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,10">
-            <Button x:Name="FilterAll"    Content="All"       Width="58" Height="28"
+            <Button x:Name="FilterAll" Content="All" Width="58" Height="28"
                     Margin="0,0,6,0" Click="FilterButton_Click"
                     Background="{DynamicResource TabActiveBrush}"
                     Foreground="{DynamicResource TabActiveTextBrush}"
@@ -24,7 +24,7 @@
                     </ControlTemplate>
                 </Button.Template>
             </Button>
-            <Button x:Name="FilterToday"  Content="Today"     Width="58" Height="28"
+            <Button x:Name="FilterToday" Content="Today" Width="58" Height="28"
                     Margin="0,0,6,0" Click="FilterButton_Click"
                     Background="{DynamicResource TabInactiveBrush}"
                     Foreground="{DynamicResource TabInactiveTextBrush}"
@@ -37,7 +37,7 @@
                     </ControlTemplate>
                 </Button.Template>
             </Button>
-            <Button x:Name="FilterWeek"   Content="This Week" Width="76" Height="28"
+            <Button x:Name="FilterWeek" Content="This Week" Width="76" Height="28"
                     Click="FilterButton_Click"
                     Background="{DynamicResource TabInactiveBrush}"
                     Foreground="{DynamicResource TabInactiveTextBrush}"
@@ -52,107 +52,130 @@
             </Button>
         </StackPanel>
 
-        <!-- Scrollable list -->
+        <!-- Grouped history -->
         <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
-            <ItemsControl x:Name="TextItemsControl">
+            <ItemsControl x:Name="GroupedItemsControl">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <Border BorderBrush="{DynamicResource CardBorderBrush}"
-                                BorderThickness="1" CornerRadius="8"
-                                Margin="0,0,0,8"
-                                Background="{DynamicResource CardBgBrush}">
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                </Grid.RowDefinitions>
+                        <Border Margin="0,0,0,12" CornerRadius="8"
+                                Background="{DynamicResource SurfaceBgBrush}">
+                            <!-- Group Header (expand/collapse) -->
+                            <Border Background="{DynamicResource CardBgBrush}" CornerRadius="8,8,0,0" Padding="10,8"
+                                    MouseLeftButtonDown="GroupHeader_Click" Cursor="Hand">
+                                <Grid>
+                                    <TextBlock Text="{Binding HeaderText}" FontWeight="Bold"
+                                               Foreground="{DynamicResource TextPrimaryBrush}" FontSize="13"/>
+                                    <TextBlock x:Name="GroupExpandIcon" HorizontalAlignment="Right"
+                                               Text="▼" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}"/>
+                                </Grid>
+                            </Border>
+                            <!-- Group Items -->
+                            <Border x:Name="GroupContent" CornerRadius="0,0,8,8" Padding="10,8"
+                                    Background="{DynamicResource AppBgBrush}">
+                                <ItemsControl ItemsSource="{Binding Items}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border BorderBrush="{DynamicResource CardBorderBrush}"
+                                                    BorderThickness="1" CornerRadius="8"
+                                                    Margin="0,0,0,8"
+                                                    Background="{DynamicResource CardBgBrush}">
+                                                <Grid>
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="Auto"/>
+                                                        <RowDefinition Height="Auto"/>
+                                                    </Grid.RowDefinitions>
 
-                                <!-- Header -->
-                                <Border Background="{DynamicResource SurfaceBgBrush}"
-                                        CornerRadius="8,8,0,0" Padding="10,8"
-                                        MouseLeftButtonDown="CardHeader_Click" Tag="{Binding}"
-                                        Cursor="Hand">
-                                    <Grid>
-                                        <TextBlock Text="{Binding ShortContent}"
-                                                   FontWeight="SemiBold" FontSize="12"
-                                                   Foreground="{DynamicResource TextPrimaryBrush}"
-                                                   TextTrimming="CharacterEllipsis"
-                                                   Margin="0,0,24,0"/>
-                                        <TextBlock x:Name="ExpandIcon" HorizontalAlignment="Right"
-                                                   Text="▶" FontSize="11"
-                                                   Foreground="{DynamicResource TextSecondaryBrush}"/>
-                                    </Grid>
-                                </Border>
+                                                    <!-- Header -->
+                                                    <Border Background="{DynamicResource SurfaceBgBrush}"
+                                                            CornerRadius="8,8,0,0" Padding="10,8"
+                                                            MouseLeftButtonDown="CardHeader_Click" Tag="{Binding}"
+                                                            Cursor="Hand">
+                                                        <Grid>
+                                                            <TextBlock Text="{Binding ShortContent}"
+                                                                       FontWeight="SemiBold" FontSize="12"
+                                                                       Foreground="{DynamicResource TextPrimaryBrush}"
+                                                                       TextTrimming="CharacterEllipsis"
+                                                                       Margin="0,0,24,0"/>
+                                                            <TextBlock x:Name="ExpandIcon" HorizontalAlignment="Right"
+                                                                       Text="▶" FontSize="11"
+                                                                       Foreground="{DynamicResource TextSecondaryBrush}"/>
+                                                        </Grid>
+                                                    </Border>
 
-                                <!-- Expanded -->
-                                <Border Grid.Row="1" Visibility="Collapsed" x:Name="ExpandedContent"
-                                        Padding="10,8">
-                                    <Grid>
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="Auto"/>
-                                            <RowDefinition Height="Auto"/>
-                                        </Grid.RowDefinitions>
-                                        <TextBlock Text="{Binding Content}" TextWrapping="Wrap"
-                                                   Foreground="{DynamicResource TextPrimaryBrush}"
-                                                   FontSize="12" Margin="0,0,0,8"/>
-                                        <TextBlock Grid.Row="1" Text="{Binding CopiedAt, StringFormat='Copied: {0:g}'}"
-                                                   Foreground="{DynamicResource TextSecondaryBrush}"
-                                                   FontSize="10" Margin="0,0,0,8"/>
-                                        <StackPanel Grid.Row="1" Orientation="Horizontal"
-                                                    HorizontalAlignment="Right" Margin="0,18,0,0">
-                                            <Button Content="Copy" Width="56" Height="26" Margin="0,0,6,0"
-                                                    Click="CopyButton_Click" Tag="{Binding}"
-                                                    Background="{DynamicResource AccentBrush}"
-                                                    Foreground="White" BorderThickness="0" Cursor="Hand"
-                                                    FontSize="11">
-                                                <Button.Template>
-                                                    <ControlTemplate TargetType="Button">
-                                                        <Border Background="{TemplateBinding Background}" CornerRadius="5" Padding="4">
-                                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                                        </Border>
-                                                    </ControlTemplate>
-                                                </Button.Template>
-                                            </Button>
-                                            <Button Content="Edit" Width="56" Height="26" Margin="0,0,6,0"
-                                                    Click="EditButton_Click" Tag="{Binding}"
-                                                    Background="{DynamicResource SurfaceBgBrush}"
-                                                    Foreground="{DynamicResource TextPrimaryBrush}"
-                                                    BorderBrush="{DynamicResource CardBorderBrush}"
-                                                    BorderThickness="1" Cursor="Hand" FontSize="11">
-                                                <Button.Template>
-                                                    <ControlTemplate TargetType="Button">
-                                                        <Border Background="{TemplateBinding Background}"
-                                                                BorderBrush="{TemplateBinding BorderBrush}"
-                                                                BorderThickness="1" CornerRadius="5" Padding="4">
-                                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                                        </Border>
-                                                    </ControlTemplate>
-                                                </Button.Template>
-                                            </Button>
-                                            <Button Content="Delete" Width="56" Height="26"
-                                                    Click="DeleteButton_Click" Tag="{Binding}"
-                                                    Background="{DynamicResource DangerBrush}"
-                                                    Foreground="White" BorderThickness="0" Cursor="Hand"
-                                                    FontSize="11">
-                                                <Button.Template>
-                                                    <ControlTemplate TargetType="Button">
-                                                        <Border Background="{TemplateBinding Background}" CornerRadius="5" Padding="4">
-                                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                                        </Border>
-                                                    </ControlTemplate>
-                                                </Button.Template>
-                                            </Button>
-                                        </StackPanel>
-                                    </Grid>
-                                </Border>
-                            </Grid>
+                                                    <!-- Expanded content -->
+                                                    <Border Grid.Row="1" Visibility="Collapsed" x:Name="ExpandedContent"
+                                                            Padding="10,8">
+                                                        <Grid>
+                                                            <Grid.RowDefinitions>
+                                                                <RowDefinition Height="Auto"/>
+                                                                <RowDefinition Height="Auto"/>
+                                                            </Grid.RowDefinitions>
+                                                            <TextBlock Text="{Binding Content}" TextWrapping="Wrap"
+                                                                       Foreground="{DynamicResource TextPrimaryBrush}"
+                                                                       FontSize="12" Margin="0,0,0,8"/>
+                                                            <TextBlock Grid.Row="1" Text="{Binding CopiedAt, StringFormat='Copied: {0:g}'}"
+                                                                       Foreground="{DynamicResource TextSecondaryBrush}"
+                                                                       FontSize="10" Margin="0,0,0,8"/>
+                                                            <StackPanel Grid.Row="1" Orientation="Horizontal"
+                                                                        HorizontalAlignment="Right" Margin="0,18,0,0">
+                                                                <Button Content="Copy" Width="56" Height="26" Margin="0,0,6,0"
+                                                                        Click="CopyButton_Click" Tag="{Binding}"
+                                                                        Background="{DynamicResource AccentBrush}"
+                                                                        Foreground="White" BorderThickness="0" Cursor="Hand"
+                                                                        FontSize="11">
+                                                                    <Button.Template>
+                                                                        <ControlTemplate TargetType="Button">
+                                                                            <Border Background="{TemplateBinding Background}" CornerRadius="5" Padding="4">
+                                                                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                                            </Border>
+                                                                        </ControlTemplate>
+                                                                    </Button.Template>
+                                                                </Button>
+                                                                <Button Content="Edit" Width="56" Height="26" Margin="0,0,6,0"
+                                                                        Click="EditButton_Click" Tag="{Binding}"
+                                                                        Background="{DynamicResource SurfaceBgBrush}"
+                                                                        Foreground="{DynamicResource TextPrimaryBrush}"
+                                                                        BorderBrush="{DynamicResource CardBorderBrush}"
+                                                                        BorderThickness="1" Cursor="Hand" FontSize="11">
+                                                                    <Button.Template>
+                                                                        <ControlTemplate TargetType="Button">
+                                                                            <Border Background="{TemplateBinding Background}"
+                                                                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                                                                    BorderThickness="1" CornerRadius="5" Padding="4">
+                                                                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                                            </Border>
+                                                                        </ControlTemplate>
+                                                                    </Button.Template>
+                                                                </Button>
+                                                                <Button Content="Delete" Width="56" Height="26"
+                                                                        Click="DeleteButton_Click" Tag="{Binding}"
+                                                                        Background="{DynamicResource DangerBrush}"
+                                                                        Foreground="White" BorderThickness="0" Cursor="Hand"
+                                                                        FontSize="11">
+                                                                    <Button.Template>
+                                                                        <ControlTemplate TargetType="Button">
+                                                                            <Border Background="{TemplateBinding Background}" CornerRadius="5" Padding="4">
+                                                                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                                            </Border>
+                                                                        </ControlTemplate>
+                                                                    </Button.Template>
+                                                                </Button>
+                                                            </StackPanel>
+                                                        </Grid>
+                                                    </Border>
+                                                </Grid>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </Border>
                         </Border>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
         </ScrollViewer>
 
-        <!-- Edit overlay -->
+        <!-- Edit overlay (unchanged) -->
         <Border x:Name="EditPanel" Grid.RowSpan="3"
                 Background="{DynamicResource AppBgBrush}"
                 Visibility="Collapsed" CornerRadius="8">

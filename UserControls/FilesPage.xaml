@@ -3,75 +3,87 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              Background="{DynamicResource AppBgBrush}">
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
-
-        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
-            <ItemsControl x:Name="FilesItemsControl">
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <ItemsControl x:Name="GroupedFilesControl">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <Border BorderBrush="{DynamicResource CardBorderBrush}"
-                                BorderThickness="1" CornerRadius="8"
-                                Margin="0,0,0,8" Padding="10"
-                                Background="{DynamicResource CardBgBrush}">
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                </Grid.RowDefinitions>
-
-                                <!-- File icon + name -->
-                                <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
-                                    <TextBlock Text="📄" FontSize="16" Margin="0,0,6,0"/>
-                                    <TextBlock Text="{Binding DisplayText}" FontWeight="SemiBold"
-                                               Foreground="{DynamicResource TextPrimaryBrush}"
-                                               FontSize="12" TextTrimming="CharacterEllipsis"
-                                               VerticalAlignment="Center"/>
-                                </StackPanel>
-
-                                <!-- Full path -->
-                                <TextBlock Grid.Row="1"
-                                           Text="{Binding FullPath}"
-                                           Foreground="{DynamicResource TextSecondaryBrush}"
-                                           FontSize="10" TextTrimming="CharacterEllipsis"
-                                           Margin="0,0,0,8"/>
-
-                                <!-- Timestamp + buttons -->
-                                <Grid Grid.Row="2">
-                                    <TextBlock Text="{Binding CopiedAt, StringFormat='Copied: {0:g}'}"
-                                               Foreground="{DynamicResource TextSecondaryBrush}"
-                                               FontSize="10" VerticalAlignment="Center"/>
-                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                                        <Button Content="Copy" Width="56" Height="26" Margin="0,0,6,0"
-                                                Click="CopyButton_Click" Tag="{Binding}"
-                                                Background="{DynamicResource AccentBrush}"
-                                                Foreground="White" BorderThickness="0" Cursor="Hand" FontSize="11">
-                                            <Button.Template>
-                                                <ControlTemplate TargetType="Button">
-                                                    <Border Background="{TemplateBinding Background}" CornerRadius="5" Padding="4">
-                                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                                    </Border>
-                                                </ControlTemplate>
-                                            </Button.Template>
-                                        </Button>
-                                        <Button Content="Delete" Width="56" Height="26"
-                                                Click="DeleteButton_Click" Tag="{Binding}"
-                                                Background="{DynamicResource DangerBrush}"
-                                                Foreground="White" BorderThickness="0" Cursor="Hand" FontSize="11">
-                                            <Button.Template>
-                                                <ControlTemplate TargetType="Button">
-                                                    <Border Background="{TemplateBinding Background}" CornerRadius="5" Padding="4">
-                                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                                    </Border>
-                                                </ControlTemplate>
-                                            </Button.Template>
-                                        </Button>
-                                    </StackPanel>
+                        <Border Margin="0,0,0,12" CornerRadius="8"
+                                Background="{DynamicResource SurfaceBgBrush}">
+                            <!-- Group Header -->
+                            <Border Background="{DynamicResource CardBgBrush}" CornerRadius="8,8,0,0" Padding="10,8"
+                                    MouseLeftButtonDown="GroupHeader_Click" Cursor="Hand">
+                                <Grid>
+                                    <TextBlock Text="{Binding HeaderText}" FontWeight="Bold"
+                                               Foreground="{DynamicResource TextPrimaryBrush}" FontSize="13"/>
+                                    <TextBlock x:Name="GroupExpandIcon" HorizontalAlignment="Right"
+                                               Text="▼" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}"/>
                                 </Grid>
-                            </Grid>
+                            </Border>
+                            <!-- Group Items -->
+                            <Border x:Name="GroupContent" CornerRadius="0,0,8,8" Padding="10,8"
+                                    Background="{DynamicResource AppBgBrush}">
+                                <ItemsControl ItemsSource="{Binding Items}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border BorderBrush="{DynamicResource CardBorderBrush}"
+                                                    BorderThickness="1" CornerRadius="8"
+                                                    Margin="0,0,0,8" Padding="10"
+                                                    Background="{DynamicResource CardBgBrush}">
+                                                <Grid>
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="Auto"/>
+                                                        <RowDefinition Height="Auto"/>
+                                                        <RowDefinition Height="Auto"/>
+                                                    </Grid.RowDefinitions>
+                                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                                                        <TextBlock Text="📄" FontSize="16" Margin="0,0,6,0"/>
+                                                        <TextBlock Text="{Binding DisplayText}" FontWeight="SemiBold"
+                                                                   Foreground="{DynamicResource TextPrimaryBrush}"
+                                                                   FontSize="12" TextTrimming="CharacterEllipsis"
+                                                                   VerticalAlignment="Center"/>
+                                                    </StackPanel>
+                                                    <TextBlock Grid.Row="1"
+                                                               Text="{Binding FullPath}"
+                                                               Foreground="{DynamicResource TextSecondaryBrush}"
+                                                               FontSize="10" TextTrimming="CharacterEllipsis"
+                                                               Margin="0,0,0,8"/>
+                                                    <Grid Grid.Row="2">
+                                                        <TextBlock Text="{Binding CopiedAt, StringFormat='Copied: {0:g}'}"
+                                                                   Foreground="{DynamicResource TextSecondaryBrush}"
+                                                                   FontSize="10" VerticalAlignment="Center"/>
+                                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                                            <Button Content="Copy" Width="56" Height="26" Margin="0,0,6,0"
+                                                                    Click="CopyButton_Click" Tag="{Binding}"
+                                                                    Background="{DynamicResource AccentBrush}"
+                                                                    Foreground="White" BorderThickness="0" Cursor="Hand" FontSize="11">
+                                                                <Button.Template>
+                                                                    <ControlTemplate TargetType="Button">
+                                                                        <Border Background="{TemplateBinding Background}" CornerRadius="5" Padding="4">
+                                                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                                        </Border>
+                                                                    </ControlTemplate>
+                                                                </Button.Template>
+                                                            </Button>
+                                                            <Button Content="Delete" Width="56" Height="26"
+                                                                    Click="DeleteButton_Click" Tag="{Binding}"
+                                                                    Background="{DynamicResource DangerBrush}"
+                                                                    Foreground="White" BorderThickness="0" Cursor="Hand" FontSize="11">
+                                                                <Button.Template>
+                                                                    <ControlTemplate TargetType="Button">
+                                                                        <Border Background="{TemplateBinding Background}" CornerRadius="5" Padding="4">
+                                                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                                        </Border>
+                                                                    </ControlTemplate>
+                                                                </Button.Template>
+                                                            </Button>
+                                                        </StackPanel>
+                                                    </Grid>
+                                                </Grid>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </Border>
                         </Border>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
